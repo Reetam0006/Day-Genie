@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>✨</text></svg>"/>
+  <title>Day-Genie — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ══════════════ APP SCREEN ══════════════ -->
+<div id="app-screen">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo">Day-Genie </div>
+    <div class="user-chip">
+      <div class="avatar" id="avatar-initials">U</div>
+      <span id="topbar-username" style="font-size:.9rem"></span>
+      <button class="btn-sm btn-logout" onclick="Controller.logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- NLP input -->
+    <div class="nlp-card">
+      <h2>✨ Add task with natural language</h2>
+      <div class="nlp-row">
+        <input id="nlp-input" type="text"
+               placeholder="Go to college on Sunday at 9 AM  |  Doctor appointment tomorrow at 3 PM near Park Street"/>
+        <button onclick="Controller.createFromNlp()">➕ Add</button>
+      </div>
+      <div class="hint">Tip: mention a day/time and location — Day-Genie parses it automatically.</div>
+    </div>
+
+    <!-- Quick manual add -->
+    <button class="add-btn" onclick="Controller.toggleQuickForm()">
+      ＋ Add task manually
+    </button>
+    <div class="quick-form" id="quick-form">
+      <div class="form-grid">
+        <div class="form-group span2">
+          <label>Title *</label>
+          <input id="q-title" type="text" placeholder="Task title"/>
+        </div>
+        <div class="form-group">
+          <label>Date &amp; Time *</label>
+          <input id="q-time" type="datetime-local"/>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input id="q-loc" type="text" placeholder="e.g. Salt Lake, Kolkata"/>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="q-cat">
+            <option value="OTHER">Other</option>
+            <option value="STUDY">Study</option>
+            <option value="MEETING">Meeting</option>
+            <option value="TRAVEL">Travel</option>
+            <option value="HEALTH">Health</option>
+            <option value="PERSONAL">Personal</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="q-pri">
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+            <option value="LOW">Low</option>
+          </select>
+        </div>
+        <div class="form-group span2">
+          <label>Description</label>
+          <textarea id="q-desc" rows="2" placeholder="Optional notes"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="max-width:200px" onclick="Controller.createManual()">Save Task</button>
+    </div>
+
+    <!-- Today's tasks -->
+    <div class="section-title">📅 Today's tasks</div>
+    <div class="task-list" id="today-list">
+      <div class="empty"><span>🌤️</span>No tasks for today</div>
+    </div>
+
+    <br/>
+    <div class="section-title" style="margin-top:8px">📋 All upcoming tasks</div>
+    <div class="task-list" id="all-list">
+      <div class="empty"><span>📭</span>No tasks yet</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- hidden auth-screen div so view.js doesn't break on logout redirect -->
+<div id="auth-screen" style="display:none"></div>
+
+<script src="js/model.js"></script>
+<script src="js/view.js"></script>
+<script src="js/controller.js"></script>
+</body>
+</html>

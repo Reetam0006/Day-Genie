@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>✨</text></svg>"/>
+  <title>Day-Genie — Sign In</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ══════════════ AUTH SCREEN ══════════════ -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <h1>Day-Genie </h1>
+    <p>Your context-aware task planner</p>
+
+    <div class="tab-bar">
+      <button class="active" onclick="Controller.showTab('login')">Login</button>
+      <button onclick="Controller.showTab('register')">Register</button>
+    </div>
+
+    <!-- Login -->
+    <div id="tab-login">
+      <div class="form-group">
+        <label>Username</label>
+        <input id="l-username" type="text" placeholder="your_username"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input id="l-password" type="password" placeholder="••••••"/>
+      </div>
+      <button class="btn btn-primary" onclick="Controller.login()">Sign In</button>
+      <div id="auth-error" class="error-msg"></div>
+    </div>
+
+    <!-- Register -->
+    <div id="tab-register" style="display:none">
+      <div class="form-group">
+        <label>Username</label>
+        <input id="r-username" type="text" placeholder="your_username"/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input id="r-email" type="email" placeholder="you@email.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input id="r-password" type="password" placeholder="Min 6 chars"/>
+      </div>
+      <div class="form-group">
+        <label>Default Location (city)</label>
+        <input id="r-location" type="text" placeholder="e.g. Kolkata, India"/>
+      </div>
+      <button class="btn btn-primary" onclick="Controller.register()">Create Account</button>
+      <div id="reg-error" class="error-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- hidden app-screen div so view.js doesn't break on init -->
+<div id="app-screen" style="display:none"></div>
+
+<script src="js/model.js"></script>
+<script src="js/view.js"></script>
+<script src="js/controller.js"></script>
+</body>
+</html>

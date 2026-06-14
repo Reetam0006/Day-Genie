@@ -15,16 +15,21 @@ daygenie/
     │   ├── config/
     │   │   ├── JwtUtil.java                  # JWT token helper
     │   │   ├── JwtAuthFilter.java            # JWT request filter
-    │   │   └── SecurityConfig.java           # Spring Security config
+    │   │   └── SecurityConfig.java           # Spring Security + CORS config
     │   ├── controller/
     │   │   ├── AuthController.java           # POST /api/auth/login|register
-    │   │   └── TaskController.java           # CRUD + NLP + refresh endpoints
+    │   │   └── TaskController.java           # CRUD + NLP + complete + refresh
+    │   ├── dto/
+    │   │   └── Dtos.java                     # Request/Response DTOs
     │   ├── engine/
     │   │   └── DecisionEngine.java           # Rule-based risk analysis
     │   ├── model/
     │   │   ├── User.java                     # JPA entity
     │   │   ├── Task.java                     # JPA entity
-    │   │   └── enums: Priority, TaskCategory, TaskStatus, RiskLevel
+    │   │   ├── Priority.java                 # Enum: HIGH, MEDIUM, LOW
+    │   │   ├── TaskCategory.java             # Enum: STUDY, MEETING, TRAVEL, HEALTH, PERSONAL, OTHER
+    │   │   ├── TaskStatus.java               # Enum: PENDING, IN_PROGRESS, COMPLETED, CANCELLED
+    │   │   └── RiskLevel.java                # Enum: LOW, MEDIUM, HIGH, UNKNOWN
     │   ├── repository/
     │   │   ├── UserRepository.java
     │   │   └── TaskRepository.java
@@ -36,8 +41,15 @@ daygenie/
     │       └── UserService.java             # Registration + UserDetails
     └── resources/
         ├── application.properties
-        └── static/
-            └── index.html                    # Single-page frontend (Vanilla JS)
+        └── static/                           # Frontend (MVC structure)
+            ├── index.html                    # Auth page (Login / Register)
+            ├── dashboard.html                # Main app page
+            ├── css/
+            │   └── style.css                 # Global styles
+            └── js/
+                ├── model.js                  # API calls & session state
+                ├── view.js                   # DOM rendering & UI updates
+                └── controller.js             # Event handling & page flow
 ```
 
 ---
@@ -51,8 +63,9 @@ daygenie/
 ### Steps
 
 ```bash
-# 1. Clone / extract the project
-cd daygenie
+# 1. Clone the repository
+git clone https://github.com/Reetam0006/Day-Genie.git
+cd Day-Genie/daygenie
 
 # 2. (Optional) Add API keys in src/main/resources/application.properties
 #    daygenie.weather.api.key=YOUR_KEY   ← openweathermap.org/api
@@ -76,12 +89,13 @@ The app runs with H2 in-memory database by default — no MySQL setup needed for
 |--------|-----|------|-------------|
 | POST | `/api/auth/register` | ✗ | Register new user |
 | POST | `/api/auth/login` | ✗ | Login → returns JWT |
-| GET  | `/api/tasks` | ✓ | All user tasks |
+| GET  | `/api/tasks` | ✓ | All active tasks |
 | GET  | `/api/tasks/today` | ✓ | Today's tasks |
 | GET  | `/api/tasks/{id}` | ✓ | Single task |
 | POST | `/api/tasks` | ✓ | Create structured task |
 | **POST** | **`/api/tasks/nlp`** | ✓ | **Create task from natural language** |
 | PUT  | `/api/tasks/{id}` | ✓ | Update task |
+| PATCH | `/api/tasks/{id}/complete` | ✓ | Mark task as done |
 | DELETE | `/api/tasks/{id}` | ✓ | Delete task |
 | POST | `/api/tasks/{id}/refresh` | ✓ | Re-run weather/route/decision |
 
@@ -113,7 +127,7 @@ Returns a fully enriched Task with weather, route and risk recommendations.
 | NLP | Rule-based regex parser (no external lib) |
 | Weather API | OpenWeatherMap `/forecast` |
 | Maps API | Google Distance Matrix |
-| Frontend | HTML5, CSS3, Vanilla JS (single file) |
+| Frontend | HTML5, CSS3, Vanilla JS (MVC — 3 separate files) |
 | Build | Maven |
 
 ---

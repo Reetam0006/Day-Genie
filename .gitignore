@@ -1,0 +1,16 @@
+# Secrets
+src/main/resources/application.properties
+
+# Maven build output
+target/
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

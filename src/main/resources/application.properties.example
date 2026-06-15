@@ -1,0 +1,9 @@
+# Copy this file to application.properties and fill in your values
+
+daygenie.weather.api.key=YOUR_OPENWEATHERMAP_API_KEY
+daygenie.maps.api.key=YOUR_GOOGLE_MAPS_API_KEY
+daygenie.jwt.secret=YOUR_JWT_SECRET
+
+spring.datasource.url=DB_CONNECTION
+spring.datasource.username=USERNAME
+spring.datasource.password=PASSWORD

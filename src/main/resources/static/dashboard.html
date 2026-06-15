@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<!--  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>✨</text></svg>"/>-->
+<!--  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'></text></svg>"/>-->
   <title>Day-Genie — Dashboard</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
 
@@ -80,6 +82,26 @@
       <button class="btn btn-primary" style="max-width:200px" onclick="Controller.createManual()">Save Task</button>
     </div>
 
+    <!-- View toggle -->
+    <div class="view-toggle">
+      <button class="view-toggle-btn active" id="view-list-btn" onclick="Controller.switchView('list')">📋 List</button>
+      <button class="view-toggle-btn" id="view-cal-btn" onclick="Controller.switchView('calendar')">📅 Calendar</button>
+    </div>
+
+    <!-- Calendar view -->
+    <div id="calendar-view" style="display:none">
+      <div class="calendar-card">
+        <div id="calendar"></div>
+        <div class="calendar-legend">
+          <span class="legend-item"><span class="legend-dot legend-high"></span>High risk</span>
+          <span class="legend-item"><span class="legend-dot legend-medium"></span>Medium risk</span>
+          <span class="legend-item"><span class="legend-dot legend-low"></span>Low / no risk</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- List view -->
+    <div id="list-view">
     <!-- Today's tasks -->
     <div class="section-title">📅 Today's tasks</div>
     <div class="task-list" id="today-list">
@@ -91,7 +113,16 @@
     <div class="task-list" id="all-list">
       <div class="empty"><span>📭</span>No tasks yet</div>
     </div>
+    </div>
 
+  </div>
+</div>
+
+<!-- ══════════════ TASK DETAIL MODAL ══════════════ -->
+<div id="task-modal-backdrop" class="modal-backdrop" onclick="View.closeTaskModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="View.closeTaskModal()">✕</button>
+    <div id="task-modal-content"></div>
   </div>
 </div>
 

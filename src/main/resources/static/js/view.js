@@ -158,6 +158,127 @@ const View = {
     };
   },
 
+  /* ── View switching ─────────────────────────────────────────────────────── */
+
+  showListView() {
+    document.getElementById('list-view').style.display     = '';
+    document.getElementById('calendar-view').style.display = 'none';
+    document.getElementById('view-list-btn').classList.add('active');
+    document.getElementById('view-cal-btn').classList.remove('active');
+  },
+
+  showCalendarView() {
+    document.getElementById('list-view').style.display     = 'none';
+    document.getElementById('calendar-view').style.display = '';
+    document.getElementById('view-cal-btn').classList.add('active');
+    document.getElementById('view-list-btn').classList.remove('active');
+  },
+
+  /* ── Calendar ───────────────────────────────────────────────────────────── */
+
+  _calendar: null,
+  _calendarTasks: [],
+
+  renderCalendar(tasks) {
+    this._calendarTasks = tasks || [];
+    const el = document.getElementById('calendar');
+
+    const events = this._calendarTasks
+      .filter(t => t.scheduledTime)
+      .map(t => ({
+        id: String(t.id),
+        title: t.title,
+        start: t.scheduledTime,
+        color: this._riskColor(t.riskLevel),
+        textColor: '#ffffff',
+        extendedProps: { task: t }
+      }));
+
+    if (this._calendar) {
+      this._calendar.removeAllEvents();
+      events.forEach(e => this._calendar.addEvent(e));
+      return;
+    }
+
+    this._calendar = new FullCalendar.Calendar(el, {
+      initialView: 'dayGridMonth',
+      displayEventTime: false,
+      height: 'auto',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,dayGridWeek,listWeek'
+      },
+      eventDisplay: 'block',
+      dayMaxEvents: 3,
+      events,
+      eventClick: (info) => {
+        this.openTaskModal(info.event.extendedProps.task);
+      },
+      eventDidMount: (info) => {
+        const t = info.event.extendedProps.task;
+        if (t.completed || t.status === 'COMPLETED') {
+          info.el.style.opacity = '.55';
+          info.el.style.textDecoration = 'line-through';
+        }
+      }
+    });
+    this._calendar.render();
+  },
+
+  _riskColor(level) {
+    if (level === 'HIGH')   return '#e74c3c';
+    if (level === 'MEDIUM') return '#f39c12';
+    if (level === 'LOW')    return '#27ae60';
+    return '#2c3e50';
+  },
+
+  /* ── Task detail modal ──────────────────────────────────────────────────── */
+
+  openTaskModal(t) {
+    const dt      = new Date(t.scheduledTime);
+    const timeStr = dt.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+    const recs    = (t.recommendations || '').split('\n').filter(Boolean).join('<br/>');
+    const feasibleBadge = t.feasible === true  ? '✅ Feasible'
+                        : t.feasible === false ? '❌ Risky'
+                        : '';
+    document.getElementById('task-modal-content').innerHTML = `
+      <div class="task-header">
+        <div class="task-title">${t.title}</div>
+        ${t.riskLevel && t.riskLevel !== 'UNKNOWN'
+          ? `<span class="chip chip-risk chip-${t.riskLevel.toLowerCase()}">${t.riskLevel} RISK</span>` : ''}
+      </div>
+      <div class="task-meta">
+        <span class="chip chip-time">🕐 ${timeStr}</span>
+        ${t.location  ? `<span class="chip chip-loc">📍 ${t.location}</span>` : ''}
+        ${t.category  ? `<span class="chip chip-cat">${t.category}</span>`    : ''}
+        ${t.priority  ? `<span class="chip chip-cat">${t.priority}</span>`    : ''}
+        ${feasibleBadge ? `<span class="chip chip-cat">${feasibleBadge}</span>` : ''}
+      </div>
+      ${t.description ? `<p style="margin-bottom:10px;color:var(--text)">${t.description}</p>` : ''}
+      ${t.weatherSummary ? `<div class="weather-row">
+        ${t.weatherIcon
+          ? `<img src="https://openweathermap.org/img/wn/${t.weatherIcon}.png" style="width:28px"/>`
+          : '🌤️'}
+        ${t.weatherSummary} · ${t.temperature ? t.temperature.toFixed(1) + '°C' : ''}
+        ${t.distanceKm             ? ` · 📍 ${t.distanceKm.toFixed(1)} km`                                        : ''}
+        ${t.estimatedTravelMinutes ? ` · 🚗 ${t.estimatedTravelMinutes} min (${t.trafficCondition || ''} traffic)` : ''}
+      </div>` : ''}
+      ${recs ? `<div class="recs">${recs}</div>` : ''}
+      <div class="task-actions">
+        <button class="btn-sm btn-complete" onclick="Controller.completeTask(${t.id}); View.closeTaskModal();">✓ Done</button>
+        <button class="btn-sm btn-refresh"  onclick="Controller.refreshTask(${t.id}); View.closeTaskModal();">↻ Refresh</button>
+        <button class="btn-sm btn-danger"   onclick="Controller.deleteTask(${t.id}); View.closeTaskModal();">🗑 Delete</button>
+      </div>
+    `;
+    document.getElementById('task-modal-backdrop').classList.add('open');
+  },
+
+  closeTaskModal(e) {
+    if (e && e.target !== document.getElementById('task-modal-backdrop')) return;
+    document.getElementById('task-modal-backdrop').classList.remove('open');
+  },
+
   /* ── Footer ─────────────────────────────────────────────────────────────── */
 
   renderFooter() {

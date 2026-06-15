@@ -278,7 +278,119 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── View toggle ─────────────────────────────── */
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: #eef2f5;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 20px;
+  max-width: 280px;
+}
+.view-toggle-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: .9rem;
+  font-family: inherit;
+  transition: .2s;
+}
+.view-toggle-btn.active { background: var(--accent); color: #fff; }
+
+/* ── Calendar ────────────────────────────────── */
+.calendar-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: .82rem;
+  color: var(--muted);
+}
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.legend-high   { background: var(--red); }
+.legend-medium { background: var(--yellow); }
+.legend-low    { background: var(--green); }
+
+#calendar { font-family: Georgia, "Times New Roman", serif; }
+.fc { --fc-border-color: var(--border); --fc-page-bg-color: var(--card); --fc-neutral-bg-color: var(--card2); }
+.fc .fc-toolbar-title { font-size: 1.2rem; color: var(--text); }
+.fc .fc-button-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  text-transform: capitalize;
+  box-shadow: none;
+}
+.fc .fc-button-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.fc .fc-button-primary:disabled { background: var(--muted); border-color: var(--muted); }
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background: var(--accent2);
+  border-color: var(--accent2);
+}
+.fc .fc-daygrid-day-number, .fc .fc-col-header-cell-cushion { color: var(--text); }
+.fc .fc-day-today { background: rgba(44,62,80,.06) !important; }
+.fc-event {
+  cursor: pointer;
+  border: none;
+  font-size: .78rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+.fc-event .fc-event-title { font-weight: 500; }
+.fc-event .fc-event-time { font-weight: 600; margin-right: 4px; }
+
+/* ── Task detail modal ──────────────────────────── */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.modal-backdrop.open { display: flex; }
+.modal-box {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 12px 32px rgba(0,0,0,.18);
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+.modal-close:hover { color: var(--text); }
+
 /* ── Footer ─────────────────────────────────────────────────────────────── */
+
 .app-footer {
   background: #0a0a0a;
   border-top: 1px solid rgba(203,41,87,0.2);

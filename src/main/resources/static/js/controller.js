@@ -72,6 +72,19 @@ const Controller = {
     ]);
     View.renderTodayList(today);
     View.renderAllList(all);
+    this._allTasks = all;
+    View.renderCalendar(all);
+  },
+
+  /* ── View switching ─────────────────────────────────────────────────────── */
+
+  switchView(view) {
+    if (view === 'calendar') {
+      View.showCalendarView();
+      View.renderCalendar(this._allTasks || []);
+    } else {
+      View.showListView();
+    }
   },
 
   /* ── NLP create ─────────────────────────────────────────────────────────── */

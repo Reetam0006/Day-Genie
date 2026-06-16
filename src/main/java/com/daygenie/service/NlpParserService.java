@@ -72,8 +72,8 @@ public class NlpParserService {
     );
 
     private static final Pattern LOCATION_PATTERN =
-        Pattern.compile("\\b(?:at|to|in|near|@)\\s+([A-Z][a-zA-Z\\s]{2,30}?)(?:\\s+(?:on|at|by|for)|$)",
-                Pattern.CASE_INSENSITIVE);
+            Pattern.compile("\\b(?:at|in|near|@)\\s+([A-Za-z\\s]{2,50}?)(?:\\s+(?:on|at|by|for)|$)",
+                    Pattern.CASE_INSENSITIVE);
 
     // ── Public API ────────────────────────────────────────────────────────────
 
@@ -84,6 +84,9 @@ public class NlpParserService {
         result.description = rawInput;
         result.scheduledTime = extractDateTime(rawInput);
         result.location = extractLocation(rawInput);
+        result.location = extractLocation(rawInput);
+
+        log.info("Extracted location = {}", result.location);
         result.category = inferCategory(rawInput);
         return result;
     }
@@ -164,11 +167,27 @@ public class NlpParserService {
     }
 
     private String extractLocation(String input) {
-        Matcher m = LOCATION_PATTERN.matcher(input);
+
+        String lower = input.toLowerCase();
+
+        Pattern p = Pattern.compile(
+                "(?:near|at|in|go to|travel to|area is|location is)\\s+([a-zA-Z\\s]+?)(?:\\s+and|\\s+on|\\s+at|\\s+tomorrow|\\s+today|$)",
+                Pattern.CASE_INSENSITIVE
+        );
+
+        Matcher m = p.matcher(lower);
+
         if (m.find()) {
             String loc = m.group(1).trim();
-            if (loc.length() > 2) return capitalize(loc);
+            loc = loc.replaceFirst("(?i)^go\\s+to\\s+", "").trim();
+            loc = loc.replaceFirst("(?i)^travel\\s+to\\s+", "").trim();
+            loc = loc.replaceFirst("(?i)^visit\\s+", "").trim();
+
+            log.info("Location extracted = {}", loc);
+
+            return capitalize(loc);
         }
+
         return null;
     }
 

@@ -14,3 +14,9 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+src/main/resources/application.properties
+src/main/resources/application main.properties
+target/
+.idea/
+
+src/main/resources/application.properties

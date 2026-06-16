@@ -116,7 +116,31 @@ public class TaskService {
 
         WeatherService.WeatherInfo weather = (city != null)
                 ? weatherService.getWeather(city, task.getScheduledTime())
-                : new WeatherService.WeatherInfo("N/A", 0,0,0,0,false,false,false,"01d");
+                : new WeatherService.WeatherInfo(
+                "N/A",       // summary
+                0.0,         // temperature
+                0.0,         // feelsLike
+                0.0,         // windSpeedKmh
+                0,           // humidity
+                0.0,         // visibilityKm
+                0,           // cloudCoverPct
+                0.0,         // rainMmPerHour
+                "01d",       // icon
+                false,       // isRainy
+                false,       // isHeavyRain
+                false,       // isStormy
+                false,       // isFoggy
+                false,       // isExtreme
+                false,       // isHeatAlert
+                false,       // isWinterChill
+                0,           // aqiIndex
+                "N/A",       // aqiLabel
+                0,           // weatherRiskPoints
+                false,       // carryUmbrella
+                false,       // wearSunscreen
+                false,       // reducedVisibilityWarning
+                false        // airQualityWarning
+        );
 
         MapsService.RouteInfo route = (task.getOriginLocation() != null && task.getLocation() != null)
                 ? mapsService.getRoute(task.getOriginLocation(), task.getLocation())

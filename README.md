@@ -1,6 +1,6 @@
 # Day-Genie ✨
 ### Context-Aware Intelligent Task Planning Application
-*Minor Project – I | Narula Institute of Technology | AY 2025-26*
+*Minor Project – II | Narula Institute of Technology | AY 2025-26*
 
 ---
 
@@ -8,48 +8,69 @@
 
 ```
 daygenie/
+├── README.md
+├── .gitignore
 ├── pom.xml
+│
 └── src/main/
     ├── java/com/daygenie/
     │   ├── DayGenieApplication.java          # Entry point
+    │   │
     │   ├── config/
     │   │   ├── JwtUtil.java                  # JWT token helper
     │   │   ├── JwtAuthFilter.java            # JWT request filter
     │   │   └── SecurityConfig.java           # Spring Security + CORS config
+    │   │
     │   ├── controller/
     │   │   ├── AuthController.java           # POST /api/auth/login|register
     │   │   └── TaskController.java           # CRUD + NLP + complete + refresh
+    │   │
     │   ├── dto/
     │   │   └── Dtos.java                     # Request/Response DTOs
+    │   │
     │   ├── engine/
     │   │   └── DecisionEngine.java           # Rule-based risk analysis
+    │   │
     │   ├── model/
     │   │   ├── User.java                     # JPA entity
     │   │   ├── Task.java                     # JPA entity
-    │   │   ├── Priority.java                 # Enum: HIGH, MEDIUM, LOW
-    │   │   ├── TaskCategory.java             # Enum: STUDY, MEETING, TRAVEL, HEALTH, PERSONAL, OTHER
-    │   │   ├── TaskStatus.java               # Enum: PENDING, IN_PROGRESS, COMPLETED, CANCELLED
-    │   │   └── RiskLevel.java                # Enum: LOW, MEDIUM, HIGH, UNKNOWN
+    │   │   ├── Priority.java                 # HIGH, MEDIUM, LOW
+    │   │   ├── TaskCategory.java             # STUDY, MEETING, TRAVEL, etc.
+    │   │   ├── TaskStatus.java               # PENDING, COMPLETED, etc.
+    │   │   └── RiskLevel.java                # LOW, MEDIUM, HIGH, UNKNOWN
+    │   │
     │   ├── repository/
     │   │   ├── UserRepository.java
     │   │   └── TaskRepository.java
+    │   │
     │   └── service/
-    │       ├── NlpParserService.java         # Rule-based NLP (date/time/location)
-    │       ├── WeatherService.java           # OpenWeatherMap API
-    │       ├── MapsService.java              # Google Distance Matrix API
-    │       ├── TaskService.java              # Business logic + scheduled refresh
-    │       └── UserService.java             # Registration + UserDetails
+    │       ├── NlpParserService.java         # Rule-based NLP parser
+    │       ├── WeatherService.java           # Weather API integration
+    │       ├── MapsService.java              # Maps/Distance API integration
+    │       ├── TaskService.java              # Business logic
+    │       └── UserService.java              # Registration + UserDetails
+    │
     └── resources/
         ├── application.properties
-        └── static/                           # Frontend (MVC structure)
-            ├── index.html                    # Auth page (Login / Register)
-            ├── dashboard.html                # Main app page
+        ├── application.properties.example    # Safe template for GitHub
+        │
+        └── static/
+            ├── index.html                    # Login / Register page
+            ├── dashboard.html                # Main application page
+            │
             ├── css/
-            │   └── style.css                 # Global styles
-            └── js/
-                ├── model.js                  # API calls & session state
-                ├── view.js                   # DOM rendering & UI updates
-                └── controller.js             # Event handling & page flow
+            │   └── style.css                 # Global styling
+            │
+            ├── js/
+            │   ├── model.js                  # API calls & state
+            │   ├── view.js                   # UI rendering
+            │   └── controller.js             # Event handling
+            │
+            ├── images/
+            │   └── favicon.png               # Browser tab icon  
+            │
+            └── fonts/
+                └── Waterlily.ttf             # Custom Day-Genie font
 ```
 
 ---

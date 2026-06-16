@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/", "/index.html", "/dashboard.html",
-                                "/css/**", "/js/**", "/favicon.ico").permitAll()
+                                "/css/**", "/js/**", "/images/**","/fonts/**", "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(h -> h.frameOptions(f -> f.disable()))

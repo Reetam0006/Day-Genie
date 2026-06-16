@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'Waterlily';
+    src: url('/fonts/Waterlily.ttf') format('truetype');
+}
+
 :root {
   --bg: #f5f5f5;
   --card: #ffffff;
@@ -37,6 +42,10 @@ body {
   box-shadow: 0 8px 24px rgba(0,0,0,.08);
 }
 .auth-box h1 {
+  font-family: 'Waterlily', cursive;
+  font-size: 3rem;
+  font-weight: normal;
+
   font-size: 2rem;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   -webkit-background-clip: text;
@@ -108,8 +117,10 @@ body {
   z-index: 10;
 }
 .logo {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-family: 'Waterlily', cursive;
+  font-size: 2.2rem;
+  font-weight: normal;
+
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

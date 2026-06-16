@@ -9,11 +9,18 @@ const API = ''; // same-origin; change to 'http://localhost:8080' for local dev
 /* ── Token helpers ─────────────────────────────────────────────────────────── */
 const Model = {
 
-  getToken()   { return localStorage.getItem('dg_token') || ''; },
-  getUser()    { return localStorage.getItem('dg_user')  || ''; },
-  saveSession(token, username) {
+  getToken()           { return localStorage.getItem('dg_token')    || ''; },
+  getUser()            { return localStorage.getItem('dg_user')     || ''; },
+  getDefaultLocation() { return localStorage.getItem('dg_location') || ''; },
+  saveSession(token, username, defaultLocation) {
     localStorage.setItem('dg_token', token);
     localStorage.setItem('dg_user',  username);
+    if (defaultLocation) localStorage.setItem('dg_location', defaultLocation);
+  },
+  clearSession() {
+    localStorage.removeItem('dg_token');
+    localStorage.removeItem('dg_user');
+    localStorage.removeItem('dg_location');
   },
   clearSession() {
     localStorage.removeItem('dg_token');

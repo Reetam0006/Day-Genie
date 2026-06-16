@@ -40,7 +40,7 @@ const Controller = {
     const { username, password } = View.getLoginValues();
     const data = await Model.login(username, password);
     if (data.success) {
-      Model.saveSession(data.token, data.username);
+      Model.saveSession(data.token, data.username, data.defaultLocation);
       window.location.href = 'dashboard.html';
     } else {
       View.setAuthError(data.message || 'Login failed');
@@ -51,7 +51,7 @@ const Controller = {
     const values = View.getRegisterValues();
     const data   = await Model.register(values);
     if (data.success) {
-      Model.saveSession(data.token, data.username);
+      Model.saveSession(data.token, data.username, data.defaultLocation);
       window.location.href = 'dashboard.html';
     } else {
       View.setRegError(data.message || 'Registration failed');

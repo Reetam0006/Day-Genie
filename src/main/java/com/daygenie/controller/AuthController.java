@@ -25,17 +25,18 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
         try {
             User user = userService.register(
-                body.get("username"),
-                body.get("email"),
-                body.get("password"),
-                body.getOrDefault("defaultLocation", "Kolkata, India")
+                    body.get("username"),
+                    body.get("email"),
+                    body.get("password"),
+                    body.getOrDefault("defaultLocation", "Kolkata, India")
             );
             String token = jwtUtil.generateToken(user.getUsername());
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "token", token,
-                "username", user.getUsername(),
-                "email", user.getEmail()
+                    "success", true,
+                    "token", token,
+                    "username", user.getUsername(),
+                    "email", user.getEmail(),
+                    "defaultLocation", user.getDefaultLocation() != null ? user.getDefaultLocation() : "Kolkata, India"
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
@@ -47,13 +48,14 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         try {
             authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(body.get("username"), body.get("password")));
-            UserDetails ud = userService.loadUserByUsername(body.get("username"));
-            String token = jwtUtil.generateToken(ud.getUsername());
+                    new UsernamePasswordAuthenticationToken(body.get("username"), body.get("password")));
+            User user = userService.findByUsername(body.get("username"));
+            String token = jwtUtil.generateToken(user.getUsername());
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "token", token,
-                "username", ud.getUsername()
+                    "success", true,
+                    "token", token,
+                    "username", user.getUsername(),
+                    "defaultLocation", user.getDefaultLocation() != null ? user.getDefaultLocation() : "Kolkata, India"
             ));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).body(Map.of("success", false, "message", "Invalid credentials"));

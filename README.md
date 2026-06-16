@@ -100,7 +100,7 @@ mvn spring-boot:run
 #    H2 Console: http://localhost:8080/h2-console  (JDBC: jdbc:h2:mem:daygenie)
 ```
 
-The app runs with H2 in-memory database by default — no MySQL setup needed for dev.
+The schema is auto-managed by Hibernate on startup — no manual migrations needed.
 
 ---
 
@@ -129,13 +129,18 @@ Returns a fully enriched Task with weather, route and risk recommendations.
 
 ---
 
-## Switching to MySQL (Production)
+## Database Setup (PostgreSQL)
 
-1. Uncomment the MySQL section in `application.properties`
-2. Comment out the H2 section
-3. Create the database: `CREATE DATABASE daygenie;`
-4. Update username/password
-
+1. Install PostgreSQL and create the database:
+```sql
+   CREATE DATABASE daygenie;
+```
+2. Update `application.properties` with your credentials:
+```properties
+   spring.datasource.url=jdbc:postgresql://localhost:5432/daygenie
+   spring.datasource.username=your_username
+   spring.datasource.password=your_password
+```
 ---
 
 ## Technologies Used

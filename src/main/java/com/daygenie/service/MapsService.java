@@ -1,83 +1,118 @@
 package com.daygenie.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Map;
-
-/**
- * Fetches distance and estimated travel time from Google Distance Matrix API.
- */
 @Service
 @Slf4j
 public class MapsService {
 
-    @Value("${daygenie.maps.api.key}")
+    @Value("${openrouteservice.api.key}")
     private String apiKey;
 
-    @Value("${daygenie.maps.distance.url}")
-    private String distanceUrl;
-
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // Same RouteInfo record your DecisionEngine already uses — no change needed there
     public record RouteInfo(
-        double distanceKm,
-        int durationMinutes,
-        String trafficCondition   // LIGHT / MODERATE / HEAVY
+            double distanceKm,
+            int durationMinutes,
+            String trafficCondition  // LIGHT / MODERATE / HEAVY
     ) {}
 
-    @SuppressWarnings("unchecked")
+    // Main method — accepts place names like "Kolkata" or "Park Street, Kolkata"
     public RouteInfo getRoute(String origin, String destination) {
         if (apiKey.startsWith("YOUR_") || origin == null || destination == null) {
-            log.warn("Maps API key not configured or missing locations – returning stub");
+            log.warn("ORS API key not configured or missing locations – returning stub");
             return new RouteInfo(5.0, 20, "UNKNOWN");
         }
         try {
-            String url = UriComponentsBuilder.fromHttpUrl(distanceUrl)
-                .queryParam("origins", origin)
-                .queryParam("destinations", destination)
-                .queryParam("departure_time", "now")
-                .queryParam("traffic_model", "best_guess")
-                .queryParam("key", apiKey)
-                .toUriString();
+            // Step 1: Convert place names to coordinates
+            double[] fromCoords = geocode(origin);
+            double[] toCoords   = geocode(destination);
 
-            Map<String, Object> resp = restTemplate.getForObject(url, Map.class);
-            if (resp == null) return fallback();
+            if (fromCoords == null || toCoords == null) {
+                log.warn("Could not geocode origin or destination");
+                return fallback();
+            }
 
-            var rows = (java.util.List<Map<String, Object>>) resp.get("rows");
-            if (rows == null || rows.isEmpty()) return fallback();
+            // Step 2: Get route between coordinates
+            String url = "https://api.openrouteservice.org/v2/directions/driving-car"
+                    + "?api_key=" + apiKey
+                    + "&start=" + fromCoords[1] + "," + fromCoords[0]  // lon,lat
+                    + "&end="   + toCoords[1]   + "," + toCoords[0];   // lon,lat
 
-            var elements = (java.util.List<Map<String, Object>>) rows.get(0).get("elements");
-            if (elements == null || elements.isEmpty()) return fallback();
+            String response = restTemplate.getForObject(url, String.class);
+            JsonNode root = objectMapper.readTree(response);
 
-            Map<String, Object> el = elements.get(0);
-            if (!"OK".equals(el.get("status"))) return fallback();
+            JsonNode segment = root
+                    .path("features").get(0)
+                    .path("properties")
+                    .path("segments").get(0);
 
-            Map<String, Object> dist  = (Map<String, Object>) el.get("distance");
-            Map<String, Object> dur   = (Map<String, Object>) el.get("duration");
-            Map<String, Object> durTr = (Map<String, Object>) el.get("duration_in_traffic");
+            double distanceKm   = segment.path("distance").asDouble() / 1000.0;
+            int durationMinutes = (int)(segment.path("duration").asDouble() / 60.0);
 
-            double km = ((Number) dist.get("value")).doubleValue() / 1000.0;
-            int normalMin  = ((Number) dur.get("value")).intValue()   / 60;
-            int trafficMin = durTr != null
-                           ? ((Number) durTr.get("value")).intValue() / 60
-                           : normalMin;
+            // ORS free tier doesn't provide live traffic
+            // We estimate based on distance and time like your original code
+            String trafficCondition = estimateTraffic(distanceKm, durationMinutes);
 
-            String condition;
-            double ratio = (double) trafficMin / Math.max(normalMin, 1);
-            if      (ratio < 1.2) condition = "LIGHT";
-            else if (ratio < 1.6) condition = "MODERATE";
-            else                  condition = "HEAVY";
-
-            return new RouteInfo(km, trafficMin, condition);
+            return new RouteInfo(distanceKm, durationMinutes, trafficCondition);
 
         } catch (Exception e) {
-            log.error("Maps API error: {}", e.getMessage());
+            log.error("ORS API error: {}", e.getMessage());
             return fallback();
         }
+    }
+
+    // Convert place name → [lat, lon]
+    private double[] geocode(String placeName) {
+        try {
+            // URL encode properly
+            String encoded = java.net.URLEncoder.encode(placeName, "UTF-8");
+            String url = "https://api.openrouteservice.org/geocode/search"
+                    + "?api_key=" + apiKey
+                    + "&text=" + encoded
+                    + "&size=1"
+                    + "&boundary.country=IN";  // restrict to India
+
+            String response = restTemplate.getForObject(url, String.class);
+            JsonNode root   = objectMapper.readTree(response);
+
+            JsonNode features = root.path("features");
+            if (features.isEmpty()) {
+                log.warn("No geocoding results for: {}", placeName);
+                return null;
+            }
+
+            JsonNode coords = features.get(0)
+                    .path("geometry")
+                    .path("coordinates");
+
+            double lon = coords.get(0).asDouble();
+            double lat = coords.get(1).asDouble();
+
+            log.info("Geocoded '{}' → lat={}, lon={}", placeName, lat, lon);
+            return new double[]{lat, lon};
+
+        } catch (Exception e) {
+            log.error("Geocoding failed for '{}': {}", placeName, e.getMessage());
+            return null;
+        }
+
+    }
+
+    // Estimate traffic since ORS free tier has no live traffic data
+    private String estimateTraffic(double distanceKm, int durationMinutes) {
+        if (distanceKm == 0) return "UNKNOWN";
+        double avgSpeedKmh = distanceKm / (durationMinutes / 60.0);
+        if      (avgSpeedKmh > 40) return "LIGHT";
+        else if (avgSpeedKmh > 20) return "MODERATE";
+        else                       return "HEAVY";
     }
 
     private RouteInfo fallback() {

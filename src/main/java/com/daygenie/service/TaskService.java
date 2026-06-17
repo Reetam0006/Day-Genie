@@ -51,7 +51,7 @@ public class TaskService {
                 .description(parsed.description)
                 .scheduledTime(parsed.scheduledTime)
                 .location(parsed.location)
-                .originLocation(user.getDefaultLocation())
+                .originLocation(parsed.originLocation != null ? parsed.originLocation : user.getDefaultLocation())
                 .category(parsed.category)
                 .priority(Priority.MEDIUM)
                 .status(TaskStatus.PENDING)

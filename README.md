@@ -90,14 +90,14 @@ cd Day-Genie/daygenie
 
 # 2. (Optional) Add API keys in src/main/resources/application.properties
 #    daygenie.weather.api.key=YOUR_KEY   ← openweathermap.org/api
-#    daygenie.maps.api.key=YOUR_KEY      ← console.cloud.google.com
+#    openrouteservice.api.key=YOUR_KEY      ← api.openrouteservice.org/
 
 # 3. Build & run
 mvn spring-boot:run
 
 # 4. Open browser
 #    App:        http://localhost:8080
-#    H2 Console: http://localhost:8080/h2-console  (JDBC: jdbc:h2:mem:daygenie)
+#    PostgreSQL: YOUR_POSTGRESQL_URL  (JDBC: org.postgresql.Driver)
 ```
 
 The schema is auto-managed by Hibernate on startup — no manual migrations needed.
@@ -145,16 +145,16 @@ Returns a fully enriched Task with weather, route and risk recommendations.
 
 ## Technologies Used
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Java 17, Spring Boot 3.2 |
-| Security | Spring Security + JWT (JJWT) |
-| Database | H2 (dev) / MySQL (prod) via Spring Data JPA |
-| NLP | Rule-based regex parser (no external lib) |
-| Weather API | OpenWeatherMap `/forecast` |
-| Maps API | Google Distance Matrix |
-| Frontend | HTML5, CSS3, Vanilla JS (MVC — 3 separate files) |
-| Build | Maven |
+| Layer | Technology                                          |
+|-------|-----------------------------------------------------|
+| Backend | Java 17, Spring Boot 3.2                            |
+| Security | Spring Security + JWT (JJWT)                        |
+| Database | Supabase postgreSQL via Spring Data JPA             |
+| NLP | Rule-based regex and natty parser (no external lib) |
+| Weather API | OpenWeatherMap `/forecast`                          |
+| Maps API | Open Route Service                                  |
+| Frontend | HTML5, CSS3, Vanilla JS (MVC — 3 separate files)    |
+| Build | Maven                                               |
 
 ---
 

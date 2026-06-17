@@ -115,9 +115,19 @@ body {
   top: 0;
   z-index: 10;
 }
+
+.logo-img {
+  mix-blend-mode: multiply;
+  object-fit: contain;
+}
+.logo-hero-wrap { text-align: center; margin-bottom: 5px; margin-top: -12px; }
+.logo-img--hero { height: 40px; margin-right: 24px;}
+.logo-img--nlp { height: 20px; vertical-align: middle; margin-right: 4px; margin-bottom: 3px; opacity: 0.75;}
+
+
 .logo {
   font-family: 'Waterlily', cursive;
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: normal;
 
   background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -135,6 +145,7 @@ body {
   justify-content: center;
   font-weight: 700;
   font-size: .9rem;
+  color: rgb(255, 255, 255);
 }
 .btn-sm { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: .85rem; }
 .btn-logout { background: rgba(239,68,68,.15); color: var(--red); }

@@ -160,7 +160,7 @@ public class TaskService {
         task.setRecommendations(String.join("\n", decision.recommendations()));
     }
 
-    @Scheduled(fixedDelay = 6 * 60 * 60 * 1000)
+    @Scheduled(initialDelay = 2 * 60 * 1000, fixedDelay = 6 * 60 * 60 * 1000)
     @Transactional
     public void refreshUpcomingTaskContexts() {
         List<Task> upcoming = taskRepo.findUpcomingPendingTasks(

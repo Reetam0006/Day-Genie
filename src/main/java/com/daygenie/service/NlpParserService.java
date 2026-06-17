@@ -23,6 +23,7 @@ public class NlpParserService {
         public String title;
         public LocalDateTime scheduledTime;
         public String location;
+        public String originLocation;
         public TaskCategory category;
         public String description;
     }
@@ -70,7 +71,9 @@ public class NlpParserService {
         "doctor|hospital|clinic|medicine|appointment|dentist", TaskCategory.HEALTH,
         "gym|exercise|workout|run|yoga",                       TaskCategory.HEALTH
     );
-
+    private static final Pattern FROM_TO_PATTERN =
+            Pattern.compile("\\bfrom\\s+([a-zA-Z\\s]+?)\\s+to\\s+([a-zA-Z\\s]+?)(?:\\s+on|\\s+at|\\s+tomorrow|\\s+today|$)",
+                    Pattern.CASE_INSENSITIVE);
     private static final Pattern LOCATION_PATTERN =
             Pattern.compile("\\b(?:at|in|near|@)\\s+([A-Za-z\\s]{2,50}?)(?:\\s+(?:on|at|by|for)|$)",
                     Pattern.CASE_INSENSITIVE);
@@ -83,8 +86,15 @@ public class NlpParserService {
         result.title = cleanTitle(rawInput);
         result.description = rawInput;
         result.scheduledTime = extractDateTime(rawInput);
-        result.location = extractLocation(rawInput);
-        result.location = extractLocation(rawInput);
+        // Try "from X to Y" first
+        Matcher fromTo = FROM_TO_PATTERN.matcher(rawInput);
+        if (fromTo.find()) {
+            result.originLocation = capitalize(fromTo.group(1).trim());
+            result.location       = capitalize(fromTo.group(2).trim());
+            log.info("From/To extracted: {} → {}", result.originLocation, result.location);
+        } else {
+            result.location = extractLocation(rawInput);
+        }
 
         log.info("Extracted location = {}", result.location);
         result.category = inferCategory(rawInput);
